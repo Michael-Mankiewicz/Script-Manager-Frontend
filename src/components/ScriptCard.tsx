@@ -30,7 +30,7 @@ function ScriptCard({}) {
     });
     const payload = {
         string1: "chipichipi",
-        string2: "chapachapa"
+        string2: "chapachapal"
     }
 
     function SendString(): Promise<void>{
