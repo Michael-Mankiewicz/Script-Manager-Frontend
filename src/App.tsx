@@ -39,8 +39,7 @@ function App() {
         styleOverrides: {
           root: {
             padding: "14px",
-            height: "400px", 
-            width: "300px",
+            
             borderRadius: "20px"
           }
         },
