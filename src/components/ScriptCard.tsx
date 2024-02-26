@@ -9,7 +9,8 @@ import { ScriptObj } from '../types/DataTypes';
 import {SubmitHandler, useForm} from 'react-hook-form'
 
 type FormFields = {
-    file: FileList
+    cartonfile: FileList,
+    fedexinvoice: FileList
 }
 
 function ScriptCard({}) {
@@ -29,8 +30,11 @@ function ScriptCard({}) {
 
     function SendForm(data:FormFields): Promise<void>{
         const formData = new FormData()
-        if(data.file && data.file.length > 0){
-            formData.append("file", data.file[0])
+        if(data.cartonfile && data.cartonfile.length > 0){
+            formData.append("cartonfile", data.cartonfile[0])
+        }
+        if(data.fedexinvoice && data.fedexinvoice.length > 0){
+            formData.append("fedexinvoice", data.fedexinvoice[0])
         }
         return axios.post("http://127.0.0.1:8000/api/address_change", formData, {headers: {'Content-Type': 'multipart/form-data',}})
                     .then((response)=>{console.log(response)})
@@ -47,11 +51,18 @@ function ScriptCard({}) {
             <Box sx={{display: "flex", justifyContent: "center", flexDirection: "column"}}>
                 <h1>Address Change Script</h1>
                 <h3>This script creates bill invoices containing all Fedex address changes per project</h3>
-                <form action="" onSubmit={handleSubmit(onSubmit)}>
-                    <label htmlFor="file">Upload File: 
-                        <input {...register("file")} type="file" name="file"/>
-                    </label>
-                    <input type="submit" />
+                
+                <form action="" onSubmit={handleSubmit(onSubmit) }>
+                    <Box sx={{display: "flex", justifyContent: "center", flexDirection: "column"}}>
+                        <label htmlFor="cartonfile">Upload Fedex Invoice CSV (Fixed Columns): 
+                            <input {...register("cartonfile")} type="file" name="cartonfile"/>
+                        </label>
+                        <label htmlFor="fedexinvoice">Upload CartonFile2 CSV: 
+                            <input {...register("fedexinvoice")} type="file" name="fedexinvoice"/>
+                        </label>
+                        <input type="submit" />
+                    </Box>
+                    
                 </form>
             </Box>
             </Card>
