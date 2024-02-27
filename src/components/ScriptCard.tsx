@@ -28,18 +28,46 @@ function ScriptCard({}) {
         },
     });
 
-    function SendForm(data:FormFields): Promise<void>{
-        const formData = new FormData()
+    function SendForm(data:FormFields): Promise<void> {
+        const formData = new FormData();
         if(data.cartonfile && data.cartonfile.length > 0){
-            formData.append("cartonfile", data.cartonfile[0])
+            formData.append("cartonfile", data.cartonfile[0]);
         }
         if(data.fedexinvoice && data.fedexinvoice.length > 0){
-            formData.append("fedexinvoice", data.fedexinvoice[0])
+            formData.append("fedexinvoice", data.fedexinvoice[0]);
         }
-        return axios.post("http://127.0.0.1:8000/api/address_change", formData, {headers: {'Content-Type': 'multipart/form-data',}})
-                    .then((response)=>{console.log(response)})
-                    .catch((err)=>{console.log(err)})
+        
+        // Set responseType to 'blob' to tell axios to download the binary content
+        return axios.post("http://127.0.0.1:8000/api/address_change", formData, {
+            headers: {'Content-Type': 'multipart/form-data'},
+            responseType: 'blob', // Important for handling binary content
+        })
+        .then((response) => {
+            // Create a URL for the blob
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            // Create a temporary link to trigger the download
+            const link = document.createElement('a');
+            link.href = url;
+            // You might want to derive or set the filename dynamically
+            // Here, we assume the server sets a filename or you set a default one
+            const contentDisposition = response.headers['content-disposition'];
+            let fileName = 'download.zip'; // A default filename in case the header is not set
+            if (contentDisposition) {
+                const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/);
+                if (fileNameMatch.length === 2)
+                    fileName = fileNameMatch[1];
+            }
+            link.setAttribute('download', fileName); // Set the filename
+            document.body.appendChild(link);
+            link.click(); // Trigger the download
+            link.remove(); // Clean up after download
+            window.URL.revokeObjectURL(url); // Free up resources
+        })
+        .catch((err) => {
+            console.error(err);
+        });
     }
+    
 
     const onSubmit: SubmitHandler<FormFields> = (data) => {
         uploadForm.mutate(data);
@@ -54,10 +82,10 @@ function ScriptCard({}) {
                 
                 <form action="" onSubmit={handleSubmit(onSubmit) }>
                     <Box sx={{display: "flex", justifyContent: "center", flexDirection: "column"}}>
-                        <label htmlFor="cartonfile">Upload Fedex Invoice CSV (Fixed Columns): 
+                        <label htmlFor="cartonfile">Upload CartonFile2 CSV:
                             <input {...register("cartonfile")} type="file" name="cartonfile"/>
                         </label>
-                        <label htmlFor="fedexinvoice">Upload CartonFile2 CSV: 
+                        <label htmlFor="fedexinvoice">Upload Fedex Invoice CSV (Fixed Columns):
                             <input {...register("fedexinvoice")} type="file" name="fedexinvoice"/>
                         </label>
                         <input type="submit" />
