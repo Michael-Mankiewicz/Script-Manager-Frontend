@@ -1,11 +1,6 @@
-import * as React from 'react';
-import { Component } from 'react';
-import { Card, Box, Button, createTheme } from '@mui/material';
-import { deepOrange } from '@mui/material/colors';
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Card, Box} from '@mui/material';
+import {useMutation } from '@tanstack/react-query';
 import axios from "axios";
-import { ScriptObj } from '../types/DataTypes';
 import {SubmitHandler, useForm} from 'react-hook-form'
 
 type FormFields = {
@@ -15,7 +10,7 @@ type FormFields = {
 
 function ScriptCard({}) {
 
-    const {register, handleSubmit, formState: {errors}} = useForm<FormFields>();
+    const {register, handleSubmit} = useForm<FormFields>();
 
     const uploadForm = useMutation({
         mutationFn: async (data:FormFields)=>{SendForm(data)},

@@ -1,11 +1,7 @@
 import { ThemeProvider } from '@emotion/react';
-import { Card, Box, Button, createTheme, ImageList } from '@mui/material';
+import { Box, createTheme } from '@mui/material';
 import { deepOrange } from '@mui/material/colors';
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from "axios";
 import ScriptCard from './components/ScriptCard';
-import ScriptOutputOptions from './components/ScriptOutputOptions';
 import logo from './assets/JCS_Family.png'
 
 

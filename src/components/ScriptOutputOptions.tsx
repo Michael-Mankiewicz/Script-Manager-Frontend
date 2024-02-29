@@ -1,11 +1,5 @@
-import * as React from 'react';
-import { Component } from 'react';
-import { Card, Box, Button, createTheme } from '@mui/material';
-import { deepOrange } from '@mui/material/colors';
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from "axios";
-import {useForm} from 'react-hook-form'
+import { Card, Box} from '@mui/material';
+
 
 
 function ScriptOutputOptions() {
