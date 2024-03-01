@@ -1,20 +1,16 @@
-import * as React from 'react';
-import { Component } from 'react';
-import { Card, Box, Button, createTheme } from '@mui/material';
-import { deepOrange } from '@mui/material/colors';
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Card, Box} from '@mui/material';
+import {useMutation } from '@tanstack/react-query';
 import axios from "axios";
-import { ScriptObj } from '../types/DataTypes';
 import {SubmitHandler, useForm} from 'react-hook-form'
 
 type FormFields = {
-    file: FileList
+    cartonfile: FileList,
+    fedexinvoice: FileList
 }
 
 function ScriptCard({}) {
 
-    const {register, handleSubmit, formState: {errors}} = useForm<FormFields>();
+    const {register, handleSubmit} = useForm<FormFields>();
 
     const uploadForm = useMutation({
         mutationFn: async (data:FormFields)=>{SendForm(data)},
@@ -27,15 +23,46 @@ function ScriptCard({}) {
         },
     });
 
-    function SendForm(data:FormFields): Promise<void>{
-        const formData = new FormData()
-        if(data.file && data.file.length > 0){
-            formData.append("file", data.file[0])
+    function SendForm(data:FormFields): Promise<void> {
+        const formData = new FormData();
+        if(data.cartonfile && data.cartonfile.length > 0){
+            formData.append("cartonfile", data.cartonfile[0]);
         }
-        return axios.post("http://127.0.0.1:8000/api/address_change", formData, {headers: {'Content-Type': 'multipart/form-data',}})
-                    .then((response)=>{console.log(response)})
-                    .catch((err)=>{console.log(err)})
+        if(data.fedexinvoice && data.fedexinvoice.length > 0){
+            formData.append("fedexinvoice", data.fedexinvoice[0]);
+        }
+        
+        // Set responseType to 'blob' to tell axios to download the binary content
+        return axios.post("http://127.0.0.1:8000/api/address_change", formData, {
+            headers: {'Content-Type': 'multipart/form-data'},
+            responseType: 'blob', // Important for handling binary content
+        })
+        .then((response) => {
+            // Create a URL for the blob
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            // Create a temporary link to trigger the download
+            const link = document.createElement('a');
+            link.href = url;
+            // You might want to derive or set the filename dynamically
+            // Here, we assume the server sets a filename or you set a default one
+            const contentDisposition = response.headers['content-disposition'];
+            let fileName = 'download.zip'; // A default filename in case the header is not set
+            if (contentDisposition) {
+                const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/);
+                if (fileNameMatch.length === 2)
+                    fileName = fileNameMatch[1];
+            }
+            link.setAttribute('download', fileName); // Set the filename
+            document.body.appendChild(link);
+            link.click(); // Trigger the download
+            link.remove(); // Clean up after download
+            window.URL.revokeObjectURL(url); // Free up resources
+        })
+        .catch((err) => {
+            console.error(err);
+        });
     }
+    
 
     const onSubmit: SubmitHandler<FormFields> = (data) => {
         uploadForm.mutate(data);
@@ -47,11 +74,18 @@ function ScriptCard({}) {
             <Box sx={{display: "flex", justifyContent: "center", flexDirection: "column"}}>
                 <h1>Address Change Script1</h1>
                 <h3>This script creates bill invoices containing all Fedex address changes per project</h3>
-                <form action="" onSubmit={handleSubmit(onSubmit)}>
-                    <label htmlFor="file">Upload File: 
-                        <input {...register("file")} type="file" name="file"/>
-                    </label>
-                    <input type="submit" />
+                
+                <form action="" onSubmit={handleSubmit(onSubmit) }>
+                    <Box sx={{display: "flex", justifyContent: "center", flexDirection: "column"}}>
+                        <label htmlFor="cartonfile">Upload CartonFile2 CSV:
+                            <input {...register("cartonfile")} type="file" name="cartonfile"/>
+                        </label>
+                        <label htmlFor="fedexinvoice">Upload Fedex Invoice CSV (Fixed Columns):
+                            <input {...register("fedexinvoice")} type="file" name="fedexinvoice"/>
+                        </label>
+                        <input type="submit" />
+                    </Box>
+                    
                 </form>
             </Box>
             </Card>
