@@ -73,7 +73,7 @@ function ScriptCard({}) {
             <Card sx={{display: "flex", justifyContent: "center"}}>
             <Box sx={{display: "flex", justifyContent: "center", flexDirection: "column"}}>
                 <h1>Address Correction Script</h1>
-                <h3>This script creates bill invoices containing all Fedex address changes per project!</h3>
+                <h3>This script creates bill invoices containing Fedex address changes per project!</h3>
                 
                 <form action="" onSubmit={handleSubmit(onSubmit) }>
                     <Box sx={{display: "flex", justifyContent: "center", flexDirection: "column"}}>
