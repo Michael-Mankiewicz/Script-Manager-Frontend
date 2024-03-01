@@ -37,7 +37,8 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            docker pull my-application:latest
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/clockbox:latest
             docker stop my-container || true
             docker rm my-container || true
-            docker run -d --name my-container my-application:latest
+            docker run -d --name my-container -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/clockbox:latest
+
